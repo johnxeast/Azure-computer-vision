@@ -1,0 +1,4 @@
+pillow
+azure-cognitiveservices-vision-computervision
+azure-storage-blob
+azure-identity
