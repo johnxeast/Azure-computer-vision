@@ -32,7 +32,7 @@ else:
 def picture_upload():
     cap = cv2.VideoCapture(0)
 
-    cv2.namedWindow('test')
+    #cv2.namedWindow('test')
 
     img_counter = 0
 
@@ -42,30 +42,42 @@ def picture_upload():
         if not ret:
             print("failed to grab frame")
             break
-        cv2.imshow('test', frame)
+        cv2.imshow('Press Spacebar to capture image and ESC to Close', frame)
         
         k = cv2.waitKey(1)
         if k%256 == 27:
+            cap.release()
+            cv2.destroyAllWindows()
+            exit_ans = input("Are you sure you want exit?[y/n]: ")
+
+            if exit_ans == 'y':
+                quit()
+            else:
+                picture_upload()
             # ESC pressed
             print("Escape hit, closing...")
             break
-
+            
         elif k%256 == 32:
             # Space pressed
             img_name = "opencv_frame_0.jpg".format(img_counter)
             cv2.imwrite(img_name, frame)
             print("Taken")
             img_counter += 1
-
-    ## Move file from /Azure-Project to /Azure-Project/images
-    original = r'{}/opencv_frame_0.jpg'.format(cwd)
-    target = r'{}/images/opencv_frame_0.jpg'.format(cwd)
-
-    shutil.move(original, target)
-
-
+            break
+    
     cap.release()
     cv2.destroyAllWindows()
+    
+    ## Move file from /Azure-Project to /Azure-Project/images
+    save_ans = input("Are you satisfied with the picture?[y/n]: ")
+    if save_ans == 'y':
+        original = r'{}/opencv_frame_0.jpg'.format(cwd)
+        target = r'{}/images/opencv_frame_0.jpg'.format(cwd)
+        shutil.move(original, target)
+    else:
+        print("Restarting")
+        picture_upload()
     
 
 first_ans = input("Do you want to run images through Azures Computer Vision Software?[y/n]: ")
@@ -101,7 +113,7 @@ if first_ans == 'y' or first_ans == 'Y':
 if first_ans == 'y' or first_ans == 'Y':
     cap = cv2.VideoCapture(0)
 
-    cv2.namedWindow('test')
+    #cv2.namedWindow('test')
 
     img_counter = 0
 
@@ -111,7 +123,7 @@ if first_ans == 'y' or first_ans == 'Y':
         if not ret:
             print("failed to grab frame")
             break
-        cv2.imshow('test', frame)
+        cv2.imshow('Press Spacebar to capture image and ESC to Close', frame)
         
         k = cv2.waitKey(1)
         if k%256 == 27:
@@ -211,7 +223,11 @@ if azure_storage_ans == 'y' or azure_storage_ans == 'Y':
     with open(image_folder + "/" + blob_name_upload, "rb") as data:
         blob_client.upload_blob(data)
 else:
-    print("File is now deleted.")
+    print("** Saving to local machine **")
+    local_folder_save = input("What would you like to name it? (Add .jpg or .png): ")
+    os.rename(r'{}/images/opencv_frame_0.jpg'.format(cwd), r'{}/images/'.format(cwd) + local_folder_save)
+    quit()
+    print("File Saved as {}".format(local_folder_save))
     
 
 ## Deletes Photo after use
